@@ -365,7 +365,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 <script>
 // ── CONFIG ────────────────────────────────────────────────
 const CLIENT_ID     = '689038213166-vvfvuu096bq3qcqs5a71hpr291ootmhd.apps.googleusercontent.com';
-const SCOPES        = 'https://www.googleapis.com/auth/calendar.readonly';
+const SCOPES        = 'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/userinfo.email';
 const EXCLUDE_NAMES = ['festivos','holidays','cumpleaños','birthdays','contacts'];
 
 // Colores de avatar por cuenta (para distinguirlas visualmente)
@@ -470,7 +470,7 @@ function requestNewAccount(onSuccess){
       // Method 2: calendarList primary calendar id = email
       if(!email) {
         try {
-          const cl = await fetch('https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=1', {
+          const cl = await fetch('https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=50', {
             headers: { Authorization: `Bearer ${token}` }
           });
           const cd = await cl.json();
