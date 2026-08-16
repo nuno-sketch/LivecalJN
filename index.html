@@ -253,6 +253,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
   </div>
   <button class="btn-continue" id="btnContinue">Entrar →</button>
   <p class="login-note">Conecta las cuentas que tengan calendarios que quieras ver. Puedes añadir más desde dentro de la app.</p>
+  <p class="login-note" style="cursor:pointer;text-decoration:underline;color:var(--text2)" id="btnResetApp">¿Problemas con las cuentas? Restablecer datos de la app</p>
 </div>
 
 <!-- DYNAMIC ISLAND -->
@@ -510,6 +511,7 @@ async function fetchAccountCalendars(email, token){
     if(existing){
       existing.color = c.backgroundColor||existing.color;
       existing.name  = c.summary||existing.name;
+      existing.accountEmail = email;
     } else {
       allCalendars.push({
         id:           c.id,
@@ -887,6 +889,12 @@ function handleAddAccount(){
 }
 document.getElementById('btnAddAccountLogin').addEventListener('click',handleAddAccount);
 document.getElementById('btnAddAccountApp').addEventListener('click',handleAddAccount);
+document.getElementById('btnResetApp').addEventListener('click',()=>{
+  if(confirm('Esto borrará todas las cuentas y calendarios guardados en este navegador. ¿Continuar?')){
+    localStorage.clear();
+    location.reload();
+  }
+});
 
 // CONTINUE button
 document.getElementById('btnContinue').addEventListener('click',async()=>{
