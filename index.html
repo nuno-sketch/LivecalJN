@@ -456,11 +456,29 @@ function requestNewAccount(onSuccess){
   tokenClientTemp = makeTokenClient(async resp => {
     if(resp.error){ console.error(resp); return; }
     const token = resp.access_token;
-    // Get email from tokeninfo
+    // Get email — try userinfo first (more reliable on Safari/iOS), fallback to calendarList primary
     try {
-      const info = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${token}`);
-      const data = await info.json();
-      const email = data.email || data.sub || 'cuenta'+Date.now();
+      let email = null;
+      // Method 1: userinfo endpoint
+      try {
+        const info = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await info.json();
+        email = data.email || null;
+      } catch(e2) {}
+      // Method 2: calendarList primary calendar id = email
+      if(!email) {
+        try {
+          const cl = await fetch('https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=1', {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const cd = await cl.json();
+          const primary = (cd.items||[]).find(c=>c.primary);
+          email = primary ? primary.id : null;
+        } catch(e3) {}
+      }
+      if(!email) email = 'cuenta_'+Date.now();
       // Avoid duplicates
       if(accounts.find(a=>a.email===email)){
         alert(`La cuenta ${email} ya está conectada.`);
